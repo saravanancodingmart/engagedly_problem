@@ -1,0 +1,89 @@
+Requirements
+5
+0 0 I 21
+0 0 I 22
+1 0 O 21
+1 0 O 25
+
+
+
+Given input format error:
+
+- Vistor id should not exceed 1024  (visitor_id >=0 && visitor_id<= 1024)
+- room_no should not exceed 100 room_no >= 0 && room_no <= 100
+- Either it should be I or O ( other letters are not allowed )
+- Event Occured Minute should be (time>= 0 && time<= 1439)
+- Should be delimited with spaces
+- Given More number inputs in single line ( Should not exceed 4)
+
+
+Logical input data error:
+
+1. Vistor should Go inside the room then only can go out
+2. Vistor is already in
+3. vistor already out
+4. Outtime should be greater than intime (out_time > in_time)
+
+visitor x is still inside the room
+
+
+Find Number Minutes that visitor is there in room ?
+
+App_Structure:
+
+{
+	"11": {
+		"time": 20
+		"visited_users": [0,1,2]
+		"visitors": {
+			"0": {
+				"in": "540",
+				"out": "" 
+			}, 
+			"1": {
+				"in": "540", //if in.present? and out.present? --> calculate time & add it with main time, Update this key value in visitors & pop this key from this object
+				"out": "590" 
+			}, 
+			"2": {
+				"in": "",
+				"out": ""
+			}
+		}		
+	},
+	"12": {
+		"time": 20
+		"visited_users": [0,1,2]
+		"visitors": {
+			"0": {
+				"in": "540",
+				"out": "" 
+			}, 
+			"1": {
+				"in": "540",
+				"out": "" 
+			}, 
+			"2": {
+				"in": "",
+				"out": ""
+			}
+		}		
+	},
+	"9": {
+		"time": 20
+		"visited_users": [0,1,2]
+		"visitors": {
+			"0": {
+				"in": "540",
+				"out": "" 
+			}, 
+			"1": {
+				"in": "540",
+				"out": "" 
+			}, 
+			"2": {
+				"in": "",
+				"out": ""
+			}
+		}		
+	},
+}
