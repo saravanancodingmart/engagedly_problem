@@ -23,6 +23,7 @@ Logical input data error:
 2. Vistor is already in
 3. vistor already out
 4. Outtime should be greater than intime (out_time > in_time)
+5. Again you can't enter the room at same time 
 
 visitor x is still inside the room
 
