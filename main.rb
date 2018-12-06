@@ -45,7 +45,6 @@ class Main
 		result
 	end
 
-
 	def self.room_present(data,line_number,visitor_id,room_no,action,time)
 		if data[room_no]["visitors"][visitor_id].present?
 			if action === "O"
