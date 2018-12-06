@@ -22,8 +22,29 @@ class Main
 			puts line_no + " Vistor is already inside the room"
 		when 7
 			puts line_no + " OUT-time should be Greater IN-time or in_out time not present "
+		when 8
+			puts line_no + " You can't use this time, already you visited this room at this time range"
+		when 9
+			puts line_no + " Sorry you can't enter this room at previously visited time range"
 		end
 	end
+
+	def self.check_range(timings,time)
+		result = false
+		if timings.present?
+			timings.each do |item|
+				if time.to_i.between?(item["in"].to_i,item["out"].to_i)				
+					result = true
+					break
+				end
+				result = false
+			end
+		else
+			result= false
+		end
+		result
+	end
+
 
 	def self.room_present(data,line_number,visitor_id,room_no,action,time)
 		if data[room_no]["visitors"][visitor_id].present?
@@ -31,12 +52,24 @@ class Main
 				data[room_no]["visitors"][visitor_id]["out"] = time
 				in_out = data[room_no]["visitors"][visitor_id]
 				if in_out["out"].present? && in_out["in"].present? && in_out["out"].to_i > in_out["in"].to_i
-					calculate_time = in_out["out"].to_i - in_out["in"].to_i
-					data[room_no]["time"] = data[room_no]["time"].to_i + calculate_time
-					data[room_no]["visited_users"].push(visitor_id)
-					data[room_no]["visited_users_count"] = data[room_no]["visited_users"].uniq.count
-					data[room_no]["avg_time"]= data[room_no]["time"].to_i / data[room_no]["visited_users_count"] 
-					data[room_no]["visitors"].delete(visitor_id)
+					param_timings = data[room_no]["visitors_timings"][visitor_id]
+					if Main.check_range(param_timings,time) == false
+						calculate_time = in_out["out"].to_i - in_out["in"].to_i
+						data[room_no]["time"] = data[room_no]["time"].to_i + calculate_time
+						data[room_no]["visited_users"].push(visitor_id)
+						data[room_no]["visited_users_count"] = data[room_no]["visited_users"].uniq.count
+						data[room_no]["avg_time"]= data[room_no]["time"].to_i / data[room_no]["visited_users_count"] 
+						data[room_no]["visitors"].delete(visitor_id)
+						if data[room_no]["visitors_timings"][visitor_id].nil?
+							data[room_no]["visitors_timings"][visitor_id] = []
+							data[room_no]["visitors_timings"][visitor_id].push(in_out)
+						else
+							data[room_no]["visitors_timings"][visitor_id].push(in_out)
+						end
+					else
+						Main.error_msg(8,line_number)
+						exit
+					end
 				else
 					Main.error_msg(7,line_number)
 					exit
@@ -47,10 +80,16 @@ class Main
 			end							
 		else
 			if action === "I" 
-				data[room_no]["visitors"][visitor_id] = {
-					"in" => time,
-					"out" => nil
-				}
+				param_timings = data[room_no]["visitors_timings"][visitor_id]
+				if Main.check_range(param_timings,time) == false
+					data[room_no]["visitors"][visitor_id] = {
+						"in" => time,
+						"out" => nil
+					}
+				else
+					Main.error_msg(9,line_number)
+					exit
+				end
 			else
 				Main.error_msg(5,line_number)
 				exit
@@ -65,6 +104,7 @@ class Main
 		visitor["visited_users"] = []
 		visitor["avg_time"] = 0
 		visitor["visited_users_count"] = 0
+		visitor["visitors_timings"] = Hash.new
 		visitor["visitors"] = Hash.new
 		if action === "I" 
 			visitor["visitors"][visitor_id] = {
@@ -130,8 +170,10 @@ class Main
 	result = Main.get_input(n,data)
 
 	if result.present?
-		ordered_result = result.sort_by{|key| key}
-		binding.pry
+		ordered_result = result.sort {|a,b| a[0].to_i<=>b[0].to_i}
+		ordered_result.each do |item|
+			puts "Room "+item[0].to_s+" , "+item[1]["avg_time"].to_s+" minute average visit,"+item[1]["visited_users_count"].to_s+" visitor total"
+		end
 	end
 	
 end
